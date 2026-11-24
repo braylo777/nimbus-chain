@@ -16,6 +16,7 @@ ed25519-dalek = { version = "2", features = ["rand_core"] }
 
 [dev-dependencies]
 rand = "0.8"
+proptest = "1"
 
 [[bin]]
 name = "certify-bench"

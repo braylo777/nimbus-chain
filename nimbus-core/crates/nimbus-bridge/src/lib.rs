@@ -641,6 +641,21 @@ impl Certifier {
         self.index
     }
 
+    /// The anchor (length, head) of this certifier's journal replica.
+    pub fn anchor(&self) -> nimbus_journal::Anchor {
+        self.journal.anchor()
+    }
+
+    /// Replicate and re-execute one shipped slot (what the `Replica` impl of `SharedCertifier` does), for callers
+    /// that own the certifier directly, such as a validator process or a network simulation.
+    pub fn replicate_shipment(
+        &mut self,
+        from: &nimbus_journal::Anchor,
+        bytes: &[u8],
+    ) -> Result<nimbus_journal::Anchor, String> {
+        self.apply(from, bytes)
+    }
+
     /// The checkpoint body this certifier derived for `slot` (zero signature), if replicated.
     pub fn derived(&self, slot: u64) -> Option<Checkpoint> {
         self.derived.get(&slot).copied()
