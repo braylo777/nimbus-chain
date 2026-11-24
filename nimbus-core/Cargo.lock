@@ -368,6 +368,7 @@ dependencies = [
  "nimbus-order",
  "nimbus-pipeline",
  "nimbus-sig",
+ "proptest",
  "rand 0.8.8",
 ]
 
@@ -480,6 +481,7 @@ dependencies = [
  "nimbus-order",
  "proptest",
  "serde",
+ "serde_json",
 ]
 
 [[package]]
