@@ -55,6 +55,43 @@ def render(d):
     return "\n".join(out)
 
 
+DBEGIN, DEND = "<!-- dissertation-metrics:begin -->", "<!-- dissertation-metrics:end -->"
+DISS = os.path.join("docs", "dissertation", "nimbus-dissertation.md")
+
+
+def render_dissertation(ref):
+    """Reference machine (metrics.json) next to the newest cloud-VM run (results/bench-*-gha-ubuntu.json)."""
+    import glob
+
+    runs = [("reference", ref)]
+    cloud = sorted(glob.glob(os.path.join(ROOT, "results", "bench-*-gha-ubuntu.json")))
+    if cloud:
+        with open(cloud[-1]) as f:
+            runs.append((os.path.relpath(cloud[-1], ROOT), json.load(f)))
+    head = "| Metric | " + " | ".join(
+        f"{d['machine']['cpu']}, {d['machine']['cores']} cores ({d['generated_at'][:10]}, `{d['git_sha']}`)" for _, d in runs
+    ) + " |"
+    out = [DBEGIN, head, "|---|" + "---|" * len(runs)]
+    for k, m in ref["metrics"].items():
+        cells = []
+        for _, d in runs:
+            x = d["metrics"].get(k)
+            cells.append("—" if x is None else (fmt_int(x["value"]) if isinstance(x["value"], int) else str(x["value"])))
+        out.append(f"| {m['what']} ({m['unit']}) | " + " | ".join(cells) + " |")
+    out.append("")
+    out.append("*Sources: " + ", ".join(f"`{'results/metrics.json' if n == 'reference' else n}`" for n, _ in runs)
+               + ". Commands: `make metrics` (reference), `.github/workflows/bench.yml` (cloud VM).*")
+    out.append(DEND)
+    return "\n".join(out)
+
+
+def splice(text, begin, end, block, name):
+    if begin not in text or end not in text:
+        sys.exit(f"{name} has no metrics block")
+    i, j = text.index(begin), text.index(end) + len(end)
+    return text[:i] + block + text[j:]
+
+
 def main():
     ap = argparse.ArgumentParser()
     g = ap.add_mutually_exclusive_group(required=True)
@@ -62,24 +99,24 @@ def main():
     g.add_argument("--write", action="store_true")
     a = ap.parse_args()
     with open(os.path.join(ROOT, "results", "metrics.json")) as f:
-        block = render(json.load(f))
-    p = os.path.join(ROOT, "README.md")
-    with open(p) as f:
-        readme = f.read()
-    if BEGIN not in readme or END not in readme:
-        sys.exit("README.md has no metrics block")
-    i, j = readme.index(BEGIN), readme.index(END) + len(END)
-    new = readme[:i] + block + readme[j:]
+        ref = json.load(f)
+    targets = [("README.md", BEGIN, END, render(ref)), (DISS, DBEGIN, DEND, render_dissertation(ref))]
+    bad = []
+    for name, b, e, block in targets:
+        p = os.path.join(ROOT, name)
+        with open(p) as f:
+            old = f.read()
+        new = splice(old, b, e, block, name)
+        if a.check and new != old:
+            bad.append(name)
+        elif a.write:
+            with open(p, "w") as f:
+                f.write(new)
+            print(f"{name}: metrics block written")
     if a.check:
-        if new != readme:
-            sys.exit(
-                "README numbers differ from results/metrics.json — run: python3 scripts/readme_numbers.py --write"
-            )
-        print("README numbers == results/metrics.json")
-    else:
-        with open(p, "w") as f:
-            f.write(new)
-        print("README.md metrics block written")
+        if bad:
+            sys.exit(f"numbers differ from results/*.json in: {', '.join(bad)} — run: python3 scripts/readme_numbers.py --write")
+        print("README + dissertation numbers == results JSON")
 
 
 if __name__ == "__main__":
