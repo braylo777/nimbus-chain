@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 520" font-family="Helvetica, Arial, sans-serif" font-size="13">
+  <title>nimbus-core crate graph</title>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/>
+    </marker>
+    <style>
+      .b{fill:#f8fafc;stroke:#334155;stroke-width:1.2}
+      .k{fill:#eef2ff;stroke:#4338ca;stroke-width:1.2}
+      .w{fill:#ecfdf5;stroke:#047857;stroke-width:1.2;stroke-dasharray:4 3}
+      .e{stroke:#6b7280;stroke-width:1.1;fill:none;marker-end:url(#a)}
+      .t{fill:#0f172a;text-anchor:middle}
+      .s{fill:#475569;font-size:11px}
+    </style>
+  </defs>
+  <rect width="880" height="520" fill="#ffffff"/>
+  <text x="20" y="28" font-size="16" font-weight="bold" fill="#0f172a">nimbus-core: 12 crates (arrows point to dependencies)</text>
+  <text x="20" y="46" class="s">Layered bottom-up: primitives, engine parts, engine, network roles. Dashed: WASM light-client verifier, demo package outside the workspace (v0.18).</text>
+
+  <!-- layer labels -->
+  <text x="20" y="478" class="s">primitives</text>
+  <text x="20" y="388" class="s">core logic</text>
+  <text x="20" y="298" class="s">wire + admission</text>
+  <text x="20" y="208" class="s">durability + agents</text>
+  <text x="20" y="128" class="s">engine + roles</text>
+
+  <!-- primitives -->
+  <rect class="k" x="250" y="455" width="150" height="36" rx="6"/><text class="t" x="325" y="478">nimbus-hash</text>
+  <rect class="k" x="520" y="455" width="150" height="36" rx="6"/><text class="t" x="595" y="478">nimbus-sig</text>
+  <!-- core logic -->
+  <rect class="b" x="140" y="365" width="150" height="36" rx="6"/><text class="t" x="215" y="388">nimbus-match</text>
+  <rect class="b" x="430" y="365" width="150" height="36" rx="6"/><text class="t" x="505" y="388">nimbus-feed</text>
+  <rect class="b" x="660" y="365" width="170" height="36" rx="6"/><text class="t" x="745" y="388">nimbus-lightclient</text>
+  <!-- wire -->
+  <rect class="b" x="250" y="275" width="150" height="36" rx="6"/><text class="t" x="325" y="298">nimbus-order</text>
+  <!-- durability -->
+  <rect class="b" x="140" y="185" width="150" height="36" rx="6"/><text class="t" x="215" y="208">nimbus-journal</text>
+  <rect class="b" x="400" y="185" width="150" height="36" rx="6"/><text class="t" x="475" y="208">nimbus-sdk</text>
+  <!-- engine + roles -->
+  <rect class="b" x="110" y="95" width="150" height="36" rx="6"/><text class="t" x="185" y="118">nimbus-pipeline</text>
+  <rect class="b" x="400" y="95" width="150" height="36" rx="6"/><text class="t" x="475" y="118">nimbus-signer</text>
+  <rect class="b" x="590" y="95" width="130" height="36" rx="6"/><text class="t" x="655" y="118">nimbus-bridge</text>
+  <rect class="b" x="730" y="95" width="130" height="36" rx="6"/><text class="t" x="795" y="118">nimbus-replica</text>
+  <rect class="w" x="680" y="185" width="180" height="36" rx="6"/><text class="t" x="770" y="208">demo/verifier (WASM)</text>
+
+  <!-- edges -->
+  <path class="e" d="M215,401 L310,455"/>               <!-- match -> hash -->
+  <path class="e" d="M480,401 L360,455"/>               <!-- feed -> hash -->
+  <path class="e" d="M520,401 L575,455"/>               <!-- feed -> sig -->
+  <path class="e" d="M700,401 L400,470"/>               <!-- lc -> hash -->
+  <path class="e" d="M720,401 L640,455"/>               <!-- lc -> sig -->
+  <path class="e" d="M300,311 L240,365"/>               <!-- order -> match -->
+  <path class="e" d="M325,311 L325,455"/>               <!-- order -> hash -->
+  <path class="e" d="M370,311 L560,455"/>               <!-- order -> sig -->
+  <path class="e" d="M240,221 L300,275"/>               <!-- journal -> order -->
+  <path class="e" d="M200,221 L205,365"/>               <!-- journal -> match -->
+  <path class="e" d="M460,221 L360,275"/>               <!-- sdk -> order -->
+  <path class="e" d="M420,221 L260,365"/>               <!-- sdk -> match -->
+  <path class="e" d="M185,131 L205,185"/>               <!-- pipeline -> journal -->
+  <path class="e" d="M210,131 L300,275"/>               <!-- pipeline -> order -->
+  <path class="e" d="M475,131 L475,185"/>               <!-- signer -> sdk -->
+  <path class="e" d="M500,131 L505,365"/>               <!-- signer -> feed -->
+  <path class="e" d="M620,131 L265,113"/>               <!-- bridge -> pipeline -->
+  <path class="e" d="M770,95 C 700,40 330,40 240,95"/>  <!-- replica -> pipeline -->
+  <path class="e" d="M770,221 L758,365"/>               <!-- wasm -> lc -->
+</svg>

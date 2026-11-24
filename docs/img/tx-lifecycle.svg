@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300" font-family="Helvetica, Arial, sans-serif" font-size="13">
+  <title>Transaction lifecycle</title>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <style>
+      .b{fill:#ffffff;stroke:#334155;stroke-width:1.2}
+      .h{fill:#eef2ff;stroke:#4338ca;stroke-width:1.2}
+      .r{fill:#fef2f2;stroke:#b91c1c;stroke-width:1.1}
+      .e{stroke:#475569;stroke-width:1.2;fill:none;marker-end:url(#a)}
+      .t{fill:#0f172a;text-anchor:middle}
+      .s{fill:#475569;font-size:11px;text-anchor:middle}
+    </style>
+  </defs>
+  <rect width="900" height="300" fill="#ffffff"/>
+  <text x="20" y="28" font-size="16" font-weight="bold" fill="#0f172a">Lifecycle of one signed order (single slot)</text>
+
+  <g>
+    <rect class="b" x="15" y="70" width="120" height="64" rx="6"/><text class="t" x="75" y="96">1 · sign</text><text class="s" x="75" y="114">intent → 0x09 digest</text>
+    <rect class="b" x="160" y="70" width="120" height="64" rx="6"/><text class="t" x="220" y="96">2 · verify</text><text class="s" x="220" y="114">ZIP-215 batch</text>
+    <rect class="b" x="305" y="70" width="120" height="64" rx="6"/><text class="t" x="365" y="96">3 · admit</text><text class="s" x="365" y="114">key, nonce, expiry</text>
+    <rect class="h" x="450" y="70" width="120" height="64" rx="6"/><text class="t" x="510" y="96">4 · journal</text><text class="s" x="510" y="114">207 B record, fsync</text>
+    <rect class="h" x="595" y="70" width="120" height="64" rx="6"/><text class="t" x="655" y="96">5 · match</text><text class="s" x="655" y="114">price-time, fees</text>
+    <rect class="b" x="740" y="70" width="145" height="64" rx="6"/><text class="t" x="812" y="96">6 · receipt</text><text class="s" x="812" y="114">post-trade balance</text>
+  </g>
+  <path class="e" d="M135,102 L160,102"/>
+  <path class="e" d="M280,102 L305,102"/>
+  <path class="e" d="M425,102 L450,102"/>
+  <path class="e" d="M570,102 L595,102"/>
+  <path class="e" d="M715,102 L740,102"/>
+
+  <rect class="b" x="595" y="190" width="290" height="64" rx="6"/><text class="t" x="740" y="216">7 · checkpoint + receipt proof</text><text class="s" x="740" y="234">slot, journal anchor, receipts root, signature</text>
+  <rect class="b" x="305" y="190" width="265" height="64" rx="6"/><text class="t" x="437" y="216">8 · agent checks offline</text><text class="s" x="437" y="234">path to root + operator signature (≈ 40–80 µs)</text>
+  <path class="e" d="M812,134 L812,190"/>
+  <path class="e" d="M595,222 L570,222"/>
+
+  <rect class="r" x="15" y="190" width="265" height="64" rx="6"/><text class="t" x="147" y="216">refused at 2 or 3</text><text class="s" x="147" y="234">no nonce consumed, nothing journaled</text>
+  <path class="e" d="M220,134 L190,190" stroke-dasharray="4 3"/>
+  <path class="e" d="M365,134 L250,190" stroke-dasharray="4 3"/>
+  <text class="s" x="510" y="160">4 and 5 run concurrently; the slot is acknowledged only after fsync (and replica quorum)</text>
+</svg>

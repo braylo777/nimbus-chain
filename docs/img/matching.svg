@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 380" font-family="Helvetica, Arial, sans-serif" font-size="13">
+  <title>Matching engine</title>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <style>
+      .ask{fill:#fef2f2;stroke:#b91c1c;stroke-width:1}
+      .bid{fill:#ecfdf5;stroke:#047857;stroke-width:1}
+      .b{fill:#ffffff;stroke:#334155;stroke-width:1.2}
+      .e{stroke:#475569;stroke-width:1.2;fill:none;marker-end:url(#a)}
+      .t{fill:#0f172a;text-anchor:middle}
+      .l{fill:#0f172a}
+      .s{fill:#475569;font-size:11px}
+    </style>
+  </defs>
+  <rect width="900" height="380" fill="#ffffff"/>
+  <text x="20" y="28" font-size="16" font-weight="bold" fill="#0f172a">Price-time priority book: a bid for 6 lots at 110 sweeps two ask levels</text>
+
+  <text x="40" y="62" class="l" font-weight="bold">asks (lowest first)</text>
+  <rect class="ask" x="40" y="72" width="320" height="30"/><text x="50" y="92" class="l">110 │ #2: 4 lots (acct B) → 2 filled, 2 rest</text>
+  <rect class="ask" x="40" y="104" width="320" height="30"/><text x="50" y="124" class="l">100 │ #1: 4 lots (acct B) → filled first</text>
+  <rect x="40" y="140" width="320" height="2" fill="#94a3b8"/>
+  <text x="40" y="162" class="l" font-weight="bold">bids (highest first)</text>
+  <rect class="bid" x="40" y="172" width="320" height="30"/><text x="50" y="192" class="l">95 │ #4: 3 lots (acct C)</text>
+  <rect class="bid" x="40" y="204" width="320" height="30"/><text x="50" y="224" class="l">90 │ #5: 1 lot (acct D)</text>
+
+  <rect class="b" x="440" y="62" width="430" height="140" rx="6"/>
+  <text x="455" y="84" class="l" font-weight="bold">Incoming: acct A, bid 6 @ 110, IOC</text>
+  <text x="455" y="106" class="l">fill 1: 4 @ 100 (maker #1)   fill 2: 2 @ 110 (maker #2)</text>
+  <text x="455" y="128" class="l">lock at admission L(110, 6) = 660 (no fees)</text>
+  <text x="455" y="150" class="l">paid 4·100 + 2·110 = 620, refund 40 to free quote</text>
+  <text x="455" y="172" class="l">average price 103.33 (SDK preview = execution)</text>
+  <text x="455" y="192" class="s">Fills execute at the maker's price; the taker is refunded (limit − fill) × qty.</text>
+
+  <rect class="b" x="40" y="260" width="830" height="100" rx="6"/>
+  <text x="55" y="282" class="l" font-weight="bold">Invariants checked after every operation (tests + match_engine fuzz target)</text>
+  <text x="55" y="304" class="l">• every lock = what the account's resting orders can owe (re-derived from the book) • book never crossed</text>
+  <text x="55" y="326" class="l">• total base / quote = deposits − withdrawals (fees move quote, never create it) • O(1) cancel via slab index</text>
+  <text x="55" y="348" class="l">• order types GTC / IOC / FOK / post-only; self-trade cancels the resting order; checked u128 notional</text>
+  <path class="e" d="M440,110 L362,118"/>
+</svg>

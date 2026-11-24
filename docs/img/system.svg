@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" font-family="Helvetica, Arial, sans-serif" font-size="13">
+  <title>Nimbus Chain system overview</title>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <style>
+      .zone{fill:#f8fafc;stroke:#cbd5e1;stroke-width:1}
+      .b{fill:#ffffff;stroke:#334155;stroke-width:1.2}
+      .h{fill:#eef2ff;stroke:#4338ca;stroke-width:1.3}
+      .g{fill:#ecfdf5;stroke:#047857;stroke-width:1.2}
+      .e{stroke:#475569;stroke-width:1.2;fill:none;marker-end:url(#a)}
+      .t{fill:#0f172a;text-anchor:middle}
+      .s{fill:#475569;font-size:11px;text-anchor:middle}
+      .z{fill:#334155;font-size:12px;font-weight:bold}
+    </style>
+  </defs>
+  <rect width="900" height="460" fill="#ffffff"/>
+  <text x="20" y="28" font-size="16" font-weight="bold" fill="#0f172a">System overview: agents → engine → replicas / certifiers → bridge and light clients</text>
+
+  <rect class="zone" x="15" y="50" width="200" height="390" rx="8"/><text class="z" x="25" y="70">Agents (off-chain)</text>
+  <rect class="zone" x="235" y="50" width="330" height="390" rx="8"/><text class="z" x="245" y="70">Operator: reference engine</text>
+  <rect class="zone" x="585" y="50" width="300" height="390" rx="8"/><text class="z" x="595" y="70">Validators and verifiers</text>
+
+  <rect class="b" x="35" y="95" width="160" height="50" rx="6"/><text class="t" x="115" y="116">AI agent</text><text class="s" x="115" y="133">strategy, no keys</text>
+  <rect class="g" x="35" y="185" width="160" height="56" rx="6"/><text class="t" x="115" y="207">nimbus-signer</text><text class="s" x="115" y="224">risk policy, rate limit, key</text>
+  <rect class="b" x="35" y="285" width="160" height="50" rx="6"/><text class="t" x="115" y="306">price feed quorum</text><text class="s" x="115" y="323">k-of-m attestations</text>
+  <rect class="b" x="35" y="370" width="160" height="50" rx="6"/><text class="t" x="115" y="391">bridge keys</text><text class="s" x="115" y="408">deposits, registrations</text>
+
+  <rect class="h" x="260" y="95" width="280" height="300" rx="8"/>
+  <text class="t" x="400" y="118" font-weight="bold">nimbus-pipeline (one slot)</text>
+  <rect class="b" x="280" y="132" width="240" height="34" rx="5"/><text class="t" x="400" y="154">batch Ed25519 verify (all cores)</text>
+  <rect class="b" x="280" y="176" width="240" height="34" rx="5"/><text class="t" x="400" y="198">admission: keys, nonces, expiry, caps</text>
+  <rect class="b" x="280" y="220" width="115" height="44" rx="5"/><text class="t" x="337" y="240">journal</text><text class="s" x="337" y="256">hash chain, fsync</text>
+  <rect class="b" x="405" y="220" width="115" height="44" rx="5"/><text class="t" x="462" y="240">matching</text><text class="s" x="462" y="256">16 markets</text>
+  <rect class="b" x="280" y="274" width="240" height="34" rx="5"/><text class="t" x="400" y="296">receipts → Merkle tree</text>
+  <rect class="b" x="280" y="318" width="240" height="34" rx="5"/><text class="t" x="400" y="340">operator-signed checkpoint</text>
+  <text class="s" x="400" y="380">journal ∥ matching run concurrently</text>
+
+  <rect class="b" x="610" y="95" width="250" height="56" rx="6"/><text class="t" x="735" y="117">journal replicas (TCP)</text><text class="s" x="735" y="134">quorum acks before release</text>
+  <rect class="g" x="610" y="180" width="250" height="56" rx="6"/><text class="t" x="735" y="202">certifiers (n = 4, q = 3)</text><text class="s" x="735" y="219">re-execute, co-sign once per slot</text>
+  <rect class="b" x="610" y="265" width="250" height="56" rx="6"/><text class="t" x="735" y="287">bridge settlement</text><text class="s" x="735" y="304">pays only certified receipts, once</text>
+  <rect class="g" x="610" y="350" width="250" height="56" rx="6"/><text class="t" x="735" y="372">light client (native or WASM)</text><text class="s" x="735" y="389">header + path + ⌈0.8n⌉ signatures</text>
+
+  <path class="e" d="M115,145 L115,185"/>
+  <path class="e" d="M195,213 L280,149"/>
+  <path class="e" d="M195,310 L280,193"/>
+  <path class="e" d="M195,395 L270,380 L280,195"/>
+  <path class="e" d="M520,242 L610,123"/>
+  <path class="e" d="M520,242 L610,208"/>
+  <path class="e" d="M520,335 L610,293"/>
+  <path class="e" d="M735,236 L735,265"/>
+  <path class="e" d="M520,345 L610,378"/>
+  <path class="e" d="M280,291 L195,215" stroke-dasharray="4 3"/>
+  <text class="s" x="225" y="270">receipt + proof</text>
+</svg>
