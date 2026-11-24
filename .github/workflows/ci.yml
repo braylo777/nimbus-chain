@@ -44,7 +44,7 @@ jobs:
           PIPELINE_SLOTS: "40"
         run: ./build_and_test.sh
       - name: test count (G4)
-        run: python3 ../scripts/count_tests.py --min 120
+        run: python3 ../scripts/count_tests.py --min 300
 
   coverage:
     name: coverage (≥ 90 % lines)

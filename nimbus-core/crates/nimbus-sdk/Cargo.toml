@@ -11,4 +11,5 @@ nimbus-order = { path = "../nimbus-order" }
 serde = { version = "1", features = ["derive"] }
 
 [dev-dependencies]
+serde_json = "1"
 proptest = "1"
