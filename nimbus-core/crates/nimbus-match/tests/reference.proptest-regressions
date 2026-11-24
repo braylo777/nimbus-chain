@@ -1,0 +1,11 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc 905c952db4fb3c9dacf0267ee127fdb5b6fa59e1dee5626a823d49e2be034018 # shrinks to ops = [Deposit { acct: 2, base: 18446744073709551615, quote: 0 }, Order { acct: 2, side: Ask, price: 1, qty: 3, tif: Gtc }, Deposit { acct: 1, base: 0, quote: 18446744073709551615 }, Order { acct: 1, side: Bid, price: 2, qty: 3, tif: Gtc }]
+cc a0b48353bac49ad7baf27f38407c1423db3c6c5622324eaf465d226755d66eac # shrinks to ops = [Deposit { acct: 0, base: 8, quote: 0 }, Deposit { acct: 1, base: 0, quote: 162 }, Order { acct: 1, side: Bid, price: 10, qty: 2, tif: Gtc }, Order { acct: 0, side: Ask, price: 1, qty: 2, tif: Gtc }]
+cc a17151bd6966f97c962d97a0b57b9bcfbbff3412197b4c09370bc66d553925bb # shrinks to ops = [Deposit { acct: 1, base: 0, quote: 340282366920938463463374607431768211454 }, Deposit { acct: 0, base: 0, quote: 0 }, Deposit { acct: 0, base: 0, quote: 0 }, Withdraw { acct: 1, base: 0, quote: 113427455640312821154458202477256070485 }, Deposit { acct: 2, base: 18446744073709551615, quote: 0 }, Order { acct: 1, side: Bid, price: 9223372036854775807, qty: 18446744073709551615, tif: Gtc }, Order { acct: 2, side: Ask, price: 1, qty: 18446744073709551615, tif: Gtc }], f = 2
+cc 72b03eb40c06c0f9ce51536bfbda6243bb9e6b8fa279c8ba080cfdc8f8b9295a # shrinks to ops = [Deposit { acct: 0, base: 2, quote: 0 }, Order { acct: 0, side: Ask, price: 1, qty: 1, tif: Gtc }, Order { acct: 0, side: Bid, price: 1, qty: 1, tif: Fok }], f = 0
+cc 6cacee2a2a0c422107304df221b549f5174226ca7829e530ee8f505bcad99da7 # shrinks to ops = [Deposit { acct: 1, base: 18446744073709551615, quote: 0 }, Order { acct: 1, side: Ask, price: 18446744073709551614, qty: 1, tif: Gtc }, Order { acct: 0, side: Bid, price: 18446744073709551614, qty: 1, tif: Fok }], f = 0

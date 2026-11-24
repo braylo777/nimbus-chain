@@ -1,0 +1,15 @@
+[workspace]
+resolver = "2"
+members = ["crates/nimbus-hash", "crates/nimbus-match", "crates/nimbus-lightclient", "crates/nimbus-order", "crates/nimbus-sdk", "crates/nimbus-signer", "crates/nimbus-feed", "crates/nimbus-journal", "crates/nimbus-pipeline", "crates/nimbus-sig", "crates/nimbus-bridge", "crates/nimbus-replica"]
+
+[workspace.package]
+edition = "2021"
+version = "0.17.0"
+license = "MIT"
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+# Ledger arithmetic must never wrap silently: a checked overflow aborts instead (see AUDIT M1).
+overflow-checks = true

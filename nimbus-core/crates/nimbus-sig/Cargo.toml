@@ -1,0 +1,23 @@
+[package]
+name = "nimbus-sig"
+description = "The single Ed25519 rule for all of nimbus: ZIP-215 verification, checked keys, parallel batch verification with bisection"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+ed25519-zebra = "4"
+curve25519-dalek = "4"
+rayon = "1.10"
+rand = "0.8"
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+
+[dev-dependencies]
+ed25519-dalek = { version = "2", features = ["batch", "rand_core"] }
+curve25519-dalek = { version = "4", features = ["rand_core"] }
+sha2 = "0.10"
+proptest = "1"
+
+[[bin]]
+name = "sig-bench"
+path = "src/bin/bench.rs"

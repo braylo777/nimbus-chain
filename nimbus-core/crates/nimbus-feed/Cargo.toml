@@ -1,0 +1,15 @@
+[package]
+name = "nimbus-feed"
+description = "Quorum-signed price/slot attestations (domain 0x0A) so signers never trust agent-supplied prices or slots"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+nimbus-hash = { path = "../nimbus-hash" }
+nimbus-sig = { path = "../nimbus-sig" }
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+
+[dev-dependencies]
+proptest = "1"
+rand = "0.8"

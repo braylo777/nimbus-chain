@@ -1,0 +1,26 @@
+[package]
+name = "nimbus-bridge"
+description = "Bridge-side settlement: pay withdrawals and refund rejected deposits only against proven engine receipts, each once"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+nimbus-hash = { path = "../nimbus-hash" }
+nimbus-match = { path = "../nimbus-match" }
+nimbus-order = { path = "../nimbus-order" }
+nimbus-pipeline = { path = "../nimbus-pipeline" }
+nimbus-journal = { path = "../nimbus-journal" }
+nimbus-sig = { path = "../nimbus-sig" }
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+
+[dev-dependencies]
+rand = "0.8"
+
+[[bin]]
+name = "certify-bench"
+path = "src/bin/certify_bench.rs"
+
+[[bin]]
+name = "certify-mem"
+path = "src/bin/certify_mem.rs"

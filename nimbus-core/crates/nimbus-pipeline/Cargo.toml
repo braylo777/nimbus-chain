@@ -1,0 +1,33 @@
+[package]
+name = "nimbus-pipeline"
+description = "Slot pipeline: parallel verification, ordered admission, group-commit journal, parallel matching, Merkle receipts, signed checkpoints"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+nimbus-hash = { path = "../nimbus-hash" }
+nimbus-match = { path = "../nimbus-match" }
+nimbus-order = { path = "../nimbus-order" }
+nimbus-journal = { path = "../nimbus-journal" }
+nimbus-sig = { path = "../nimbus-sig" }
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+rayon = "1.10"
+rand = "0.8"
+
+[dev-dependencies]
+proptest = "1"
+nimbus-feed = { path = "../nimbus-feed" }
+sha2 = "0.10"
+
+[[bin]]
+name = "pipeline-bench"
+path = "src/bin/bench.rs"
+
+[[bin]]
+name = "repl-bench"
+path = "src/bin/repl_bench.rs"
+
+[[bin]]
+name = "recovery-bench"
+path = "src/bin/recovery_bench.rs"

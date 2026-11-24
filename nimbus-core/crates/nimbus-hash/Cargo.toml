@@ -1,0 +1,18 @@
+[package]
+name = "nimbus-hash"
+description = "NIMBUS domain-separated SHA-384 commitments: RFC 6962 Merkle roots (reference, streaming, parallel)"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+sha2 = "0.10"
+rayon = "1.10"
+
+[dev-dependencies]
+proptest = "1"
+rand = "0.8"
+
+[[bin]]
+name = "hash-bench"
+path = "src/bin/bench.rs"

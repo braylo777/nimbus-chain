@@ -1,0 +1,21 @@
+[package]
+name = "nimbus-signer"
+description = "Key-isolating order signer: holds the key, assigns nonces, enforces the risk policy (Unix socket)"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+nimbus-match = { path = "../nimbus-match" }
+nimbus-order = { path = "../nimbus-order" }
+nimbus-sdk = { path = "../nimbus-sdk" }
+nimbus-feed = { path = "../nimbus-feed" }
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+hex = "0.4"
+rand = "0.8"
+
+[[bin]]
+name = "nimbus-signer"
+path = "src/bin/main.rs"

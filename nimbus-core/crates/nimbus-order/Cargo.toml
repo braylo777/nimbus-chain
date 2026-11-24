@@ -1,0 +1,18 @@
+[package]
+name = "nimbus-order"
+description = "Signed orders (0x09), account actions (0x0F), bridge operations (0x10), journal entries, and engine-side admission"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+nimbus-hash = { path = "../nimbus-hash" }
+nimbus-match = { path = "../nimbus-match" }
+nimbus-sig = { path = "../nimbus-sig" }
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+rustc-hash = "2"
+rayon = "1.10"
+
+[dev-dependencies]
+proptest = "1"
+rand = "0.8"

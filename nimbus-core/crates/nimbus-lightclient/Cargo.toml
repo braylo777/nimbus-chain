@@ -1,0 +1,20 @@
+[package]
+name = "nimbus-lightclient"
+description = "Verify NIMBUS finality proofs: header, RFC 6962 inclusion path, and a ZIP-215 batch-verified Ed25519 quorum certificate"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+rand = "0.8"
+nimbus-hash = { path = "../nimbus-hash" }
+nimbus-sig = { path = "../nimbus-sig" }
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+
+[dev-dependencies]
+proptest = "1"
+ed25519-dalek = { version = "2", features = ["batch", "rand_core"] }
+
+[[bin]]
+name = "lc-bench"
+path = "src/bin/bench.rs"

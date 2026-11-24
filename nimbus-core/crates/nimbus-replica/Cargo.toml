@@ -1,0 +1,23 @@
+[package]
+name = "nimbus-replica"
+description = "Authenticated TCP transport for engine journal replication: operator-signed shipments, replica-signed acknowledgements (domain 0x11), many batches in flight"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+nimbus-journal = { path = "../nimbus-journal" }
+nimbus-pipeline = { path = "../nimbus-pipeline" }
+nimbus-sig = { path = "../nimbus-sig" }
+nimbus-hash = { path = "../nimbus-hash" }
+sha2 = "0.10"
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+nimbus-order = { path = "../nimbus-order" }
+nimbus-match = { path = "../nimbus-match" }
+
+[dev-dependencies]
+rand = "0.8"
+
+[[bin]]
+name = "tcp-bench"
+path = "src/bin/tcp_bench.rs"

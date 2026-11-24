@@ -1,0 +1,20 @@
+[package]
+name = "nimbus-match"
+description = "Deterministic fixed-point limit-order-book matching and settlement, parallel across markets"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+rand = "0.8"
+nimbus-hash = { path = "../nimbus-hash" }
+rayon = "1.10"
+rustc-hash = "2"
+
+[dev-dependencies]
+proptest = "1"
+rand = "0.8"
+
+[[bin]]
+name = "match-bench"
+path = "src/bin/bench.rs"

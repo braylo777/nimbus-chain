@@ -1,0 +1,20 @@
+[package]
+name = "nimbus-journal"
+description = "Tamper-evident, crash-safe write-ahead journal of admitted orders (hash chain, domain 0x0B)"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+nimbus-hash = { path = "../nimbus-hash" }
+nimbus-order = { path = "../nimbus-order" }
+nimbus-match = { path = "../nimbus-match" }
+
+[dev-dependencies]
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+proptest = "1"
+rand = "0.8"
+
+[[bin]]
+name = "journal-bench"
+path = "src/bin/bench.rs"
