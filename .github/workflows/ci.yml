@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  rust:
+    name: rust (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    defaults:
+      run:
+        working-directory: nimbus-core
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: nimbus-core
+      - name: fmt
+        run: cargo fmt --all -- --check
+      - name: clippy
+        run: cargo clippy --release --all-targets -- -D warnings
+      - name: build_and_test.sh (build, tests, benchmarks, fmt, clippy)
+        env:
+          REPL_SLOTS: "200"
+          TCP_SLOTS: "200"
+          PIPELINE_SLOTS: "40"
+        run: ./build_and_test.sh
+      - name: test count (G4)
+        run: python3 ../scripts/count_tests.py --min 120
+
+  coverage:
+    name: coverage (≥ 90 % lines)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: nimbus-core
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: nimbus-core
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-llvm-cov
+      - name: coverage
+        run: cargo llvm-cov --release --workspace --ignore-filename-regex 'src/bin/' --fail-under-lines 90 --summary-only
+
+  hardhat:
+    name: hardhat (local chain)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: nimbus-local-chain
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: install (lockfile, no install scripts)
+        run: npm ci --ignore-scripts
+      - name: compile
+        run: npm run compile
+      - name: start chain, deploy, test
+        run: |
+          npx hardhat node > chain.log 2>&1 &
+          for i in $(seq 1 60); do curl -s -X POST -H 'content-type: application/json' --data '{"jsonrpc":"2.0","id":1,"method":"eth_chainId","params":[]}' http://127.0.0.1:8545 && break; sleep 1; done
+          npm run deploy
+          npm test

@@ -214,13 +214,12 @@ impl Settlement {
         validators: Option<Validators>,
     ) -> Result<Settlement, SettleError> {
         let (log, buf) = load(path, 48)?;
-        let settled = buf
-            .chunks_exact(48)
-            .map(|c| c.try_into().expect("48"))
-            .collect();
+        let settled = buf.as_chunks::<48>().0.iter().copied().collect();
         let (cklog, buf) = load(&path.with_extension("checkpoints"), 56)?;
         let checkpoints = buf
-            .chunks_exact(56)
+            .as_chunks::<56>()
+            .0
+            .iter()
             .map(|c| {
                 (
                     u64::from_be_bytes(c[..8].try_into().expect("8")),
@@ -525,7 +524,9 @@ impl Certifier {
         }
         let (signed_log, buf) = load(&dir.join("signed.bin"), 56).map_err(|e| format!("{e:?}"))?;
         let signed = buf
-            .chunks_exact(56)
+            .as_chunks::<56>()
+            .0
+            .iter()
             .map(|c| {
                 (
                     u64::from_be_bytes(c[..8].try_into().expect("8")),

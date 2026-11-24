@@ -1141,7 +1141,7 @@ impl SnapshotFollower {
             let mut buf = Vec::new();
             f.read_to_end(&mut buf)?;
             let whole = buf.len() / CHECKPOINT_LEN * CHECKPOINT_LEN;
-            for c in buf[..whole].chunks_exact(CHECKPOINT_LEN) {
+            for c in buf[..whole].as_chunks::<CHECKPOINT_LEN>().0 {
                 let c = Checkpoint::from_bytes(c).expect("fixed length");
                 self.pending.insert(c.slot, c);
             }
@@ -1586,7 +1586,7 @@ impl Pipeline {
                     if buf.len() % CHECKPOINT_LEN != 0 {
                         report.checkpoints_discarded += 1;
                     }
-                    for c in buf.chunks_exact(CHECKPOINT_LEN) {
+                    for c in buf.as_chunks::<CHECKPOINT_LEN>().0 {
                         match Checkpoint::from_bytes(c).filter(|c| c.verify(&pk)) {
                             Some(c) => {
                                 stored.insert(c.slot, c);

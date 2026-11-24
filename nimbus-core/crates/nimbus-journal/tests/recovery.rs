@@ -24,8 +24,8 @@ fn live_run(p: &Path, n: usize, seed: u64) -> ([u8; 48], Vec<SigningKey>) {
     let mut ex = Exchange::new(3);
     for (a, k) in keys.iter().enumerate() {
         adm.register(a as u32, k.verifying_key()).unwrap();
-        for m in 0..3 {
-            ex.markets[m].apply(&Op::Deposit {
+        for m in ex.markets.iter_mut() {
+            m.apply(&Op::Deposit {
                 acct: a as u32,
                 base: 1_000_000,
                 quote: 1_000_000_000,
@@ -69,8 +69,8 @@ fn replay(records: &[Record], keys: &[SigningKey]) -> [u8; 48] {
     let mut ex = Exchange::new(3);
     for (a, k) in keys.iter().enumerate() {
         adm.register(a as u32, k.verifying_key()).unwrap();
-        for m in 0..3 {
-            ex.markets[m].apply(&Op::Deposit {
+        for m in ex.markets.iter_mut() {
+            m.apply(&Op::Deposit {
                 acct: a as u32,
                 base: 1_000_000,
                 quote: 1_000_000_000,
