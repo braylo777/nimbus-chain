@@ -1,0 +1,4 @@
+.git
+**/target
+nimbus-local-chain/node_modules
+demo/verifier/target
