@@ -359,7 +359,7 @@ dependencies = [
 
 [[package]]
 name = "nimbus-bridge"
-version = "0.17.0"
+version = "0.18.0"
 dependencies = [
  "ed25519-dalek",
  "nimbus-hash",
@@ -374,7 +374,7 @@ dependencies = [
 
 [[package]]
 name = "nimbus-feed"
-version = "0.17.0"
+version = "0.18.0"
 dependencies = [
  "ed25519-dalek",
  "nimbus-hash",
@@ -385,7 +385,7 @@ dependencies = [
 
 [[package]]
 name = "nimbus-hash"
-version = "0.17.0"
+version = "0.18.0"
 dependencies = [
  "proptest",
  "rand 0.8.8",
@@ -395,7 +395,7 @@ dependencies = [
 
 [[package]]
 name = "nimbus-journal"
-version = "0.17.0"
+version = "0.18.0"
 dependencies = [
  "ed25519-dalek",
  "nimbus-hash",
@@ -407,7 +407,7 @@ dependencies = [
 
 [[package]]
 name = "nimbus-lightclient"
-version = "0.17.0"
+version = "0.18.0"
 dependencies = [
  "ed25519-dalek",
  "nimbus-hash",
@@ -418,7 +418,7 @@ dependencies = [
 
 [[package]]
 name = "nimbus-match"
-version = "0.17.0"
+version = "0.18.0"
 dependencies = [
  "nimbus-hash",
  "proptest",
@@ -429,7 +429,7 @@ dependencies = [
 
 [[package]]
 name = "nimbus-order"
-version = "0.17.0"
+version = "0.18.0"
 dependencies = [
  "ed25519-dalek",
  "nimbus-hash",
@@ -443,7 +443,7 @@ dependencies = [
 
 [[package]]
 name = "nimbus-pipeline"
-version = "0.17.0"
+version = "0.18.0"
 dependencies = [
  "ed25519-dalek",
  "nimbus-feed",
@@ -460,7 +460,7 @@ dependencies = [
 
 [[package]]
 name = "nimbus-replica"
-version = "0.17.0"
+version = "0.18.0"
 dependencies = [
  "ed25519-dalek",
  "nimbus-hash",
@@ -475,7 +475,7 @@ dependencies = [
 
 [[package]]
 name = "nimbus-sdk"
-version = "0.17.0"
+version = "0.18.0"
 dependencies = [
  "nimbus-match",
  "nimbus-order",
@@ -486,7 +486,7 @@ dependencies = [
 
 [[package]]
 name = "nimbus-sig"
-version = "0.17.0"
+version = "0.18.0"
 dependencies = [
  "curve25519-dalek",
  "ed25519-dalek",
@@ -499,7 +499,7 @@ dependencies = [
 
 [[package]]
 name = "nimbus-signer"
-version = "0.17.0"
+version = "0.18.0"
 dependencies = [
  "ed25519-dalek",
  "hex",

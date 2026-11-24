@@ -1,17 +1,18 @@
 {
  "label": "mac-m2pro",
- "generated_at": "2026-11-24T20:50:08Z",
- "git_sha": "7d89ac7",
+ "generated_at": "2026-11-24T21:12:01Z",
+ "git_sha": "d897eee",
  "machine": {
   "os": "Darwin 25.6.0",
-  "arch": "x86_64",
+  "arch": "aarch64",
+  "target": "aarch64-apple-darwin",
   "cpu": "Apple M2 Pro",
   "cores": 12,
   "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)"
  },
  "kind": "measured on real hardware (not simulated)",
  "tests": {
-  "value": 126,
+  "value": 309,
   "command": "python3 scripts/count_tests.py"
  },
  "crates": {
@@ -20,37 +21,37 @@
  },
  "metrics": {
   "pipeline_entries_per_s_4t": {
-   "value": 142645,
+   "value": 207141,
    "unit": "entries/s",
    "command": "nimbus-core/target/release/pipeline-bench",
    "what": "signed entries/s end to end (verify, admit, journal + fsync, match, receipts, checkpoint), 4 threads, pipelined"
   },
   "pipeline_entries_per_s_4t_2replicas": {
-   "value": 108670,
+   "value": 173895,
    "unit": "entries/s",
    "command": "nimbus-core/target/release/pipeline-bench",
    "what": "same, 2 local journal replicas both required"
   },
   "pipeline_baseline_entries_per_s": {
-   "value": 17602,
+   "value": 18452,
    "unit": "entries/s",
    "command": "nimbus-core/target/release/pipeline-bench",
    "what": "sequential single-verification baseline"
   },
   "receipt_agent_check_us": {
-   "value": 81.6,
+   "value": 66.4,
    "unit": "µs",
    "command": "nimbus-core/target/release/pipeline-bench",
    "what": "agent-side receipt-proof check"
   },
   "match_ns_per_op": {
-   "value": 143.9,
+   "value": 92.9,
    "unit": "ns/op",
    "command": "nimbus-core/target/release/match-bench",
    "what": "single-market matching cost per operation"
   },
   "match_16_markets_mops": {
-   "value": 12.58,
+   "value": 26.09,
    "unit": "M ops/s",
    "command": "nimbus-core/target/release/match-bench",
    "what": "16 markets matched in parallel"
@@ -62,19 +63,19 @@
    "what": "finality proof size, 21 validators (quorum 17)"
   },
   "lightclient_verify_ms_n21": {
-   "value": 0.64,
+   "value": 0.46,
    "unit": "ms",
    "command": "nimbus-core/target/release/lc-bench",
    "what": "finality proof verification p50, one core, native"
   },
   "sha384_us_per_hash": {
-   "value": 0.432,
+   "value": 0.288,
    "unit": "µs/hash",
    "command": "nimbus-core/target/release/hash-bench",
    "what": "domain-separated SHA-384 Merkle hashing, one core"
   },
   "journal_records_per_s_fsync256": {
-   "value": 50184,
+   "value": 46454,
    "unit": "records/s",
    "command": "nimbus-core/target/release/journal-bench",
    "what": "journal append with fsync every 256 records"

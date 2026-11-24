@@ -1,17 +1,18 @@
 {
  "label": "mac-m2pro",
- "generated_at": "2026-11-24T20:50:08Z",
- "git_sha": "7d89ac7",
+ "generated_at": "2026-11-24T21:12:01Z",
+ "git_sha": "d897eee",
  "machine": {
   "os": "Darwin 25.6.0",
-  "arch": "x86_64",
+  "arch": "aarch64",
+  "target": "aarch64-apple-darwin",
   "cpu": "Apple M2 Pro",
   "cores": 12,
   "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)"
  },
  "kind": "measured on real hardware (not simulated)",
  "tests": {
-  "value": 126,
+  "value": 309,
   "command": "python3 scripts/count_tests.py"
  },
  "crates": {
@@ -20,37 +21,37 @@
  },
  "metrics": {
   "pipeline_entries_per_s_4t": {
-   "value": 142645,
+   "value": 207141,
    "unit": "entries/s",
    "command": "nimbus-core/target/release/pipeline-bench",
    "what": "signed entries/s end to end (verify, admit, journal + fsync, match, receipts, checkpoint), 4 threads, pipelined"
   },
   "pipeline_entries_per_s_4t_2replicas": {
-   "value": 108670,
+   "value": 173895,
    "unit": "entries/s",
    "command": "nimbus-core/target/release/pipeline-bench",
    "what": "same, 2 local journal replicas both required"
   },
   "pipeline_baseline_entries_per_s": {
-   "value": 17602,
+   "value": 18452,
    "unit": "entries/s",
    "command": "nimbus-core/target/release/pipeline-bench",
    "what": "sequential single-verification baseline"
   },
   "receipt_agent_check_us": {
-   "value": 81.6,
+   "value": 66.4,
    "unit": "µs",
    "command": "nimbus-core/target/release/pipeline-bench",
    "what": "agent-side receipt-proof check"
   },
   "match_ns_per_op": {
-   "value": 143.9,
+   "value": 92.9,
    "unit": "ns/op",
    "command": "nimbus-core/target/release/match-bench",
    "what": "single-market matching cost per operation"
   },
   "match_16_markets_mops": {
-   "value": 12.58,
+   "value": 26.09,
    "unit": "M ops/s",
    "command": "nimbus-core/target/release/match-bench",
    "what": "16 markets matched in parallel"
@@ -62,29 +63,29 @@
    "what": "finality proof size, 21 validators (quorum 17)"
   },
   "lightclient_verify_ms_n21": {
-   "value": 0.64,
+   "value": 0.46,
    "unit": "ms",
    "command": "nimbus-core/target/release/lc-bench",
    "what": "finality proof verification p50, one core, native"
   },
   "sha384_us_per_hash": {
-   "value": 0.432,
+   "value": 0.288,
    "unit": "µs/hash",
    "command": "nimbus-core/target/release/hash-bench",
    "what": "domain-separated SHA-384 Merkle hashing, one core"
   },
   "journal_records_per_s_fsync256": {
-   "value": 50184,
+   "value": 46454,
    "unit": "records/s",
    "command": "nimbus-core/target/release/journal-bench",
    "what": "journal append with fsync every 256 records"
   }
  },
  "raw": {
-  "pipeline-bench": "prepared 400000 signed entries (4096 accounts, 16 markets, 20000/slot) in 1.07 s\nbaseline  (sequential, single verify, 1 thread):      17602 entries/s  (22.72 s)\npipeline  (1 thread ):     58071 entries/s  (6.89 s) | verify 76% admit 0% journal∥match 24% (journal 7%, match 17%) ckpt 0.0% expire 0.2%\npipeline  (2 threads):    104040 entries/s  (3.84 s) | verify 74% admit 1% journal∥match 24% (journal 13%, match 24%) ckpt 0.0% expire 0.4%\npipeline  (4 threads):    130297 entries/s  (3.07 s) | verify 67% admit 2% journal∥match 30% (journal 20%, match 30%) ckpt 0.1% expire 0.7%\n           state identical to baseline (9477b9417f5e7654…); 262303 fills, 22926 cancels (incl. expiries), 11925 withdrawals, 8009 deposits\n           receipt proof (35220 receipts/slot, 16 hashes/path): build 0.36 µs, agent check 81.6 µs\npipelined (4 threads, verify s+1 ∥ commit s, 0 replicas):    142645 entries/s  (2.80 s); state identical\npipelined (4 threads, verify s+1 ∥ commit s, 2 replicas):    108670 entries/s  (3.68 s); state identical\n",
-  "match-bench": "single market : 2000000 ops in 0.288 s = 143.9 ns/op (6.95 M ops/s), 1163722 fills, 203058 open orders\nstate hash    : 230.63 ms for 203058 open orders (1e66d816e8c3…)\n 16 markets  : 2621440 ops in 0.208 s = 12.58 M ops/s on 12 threads (953.8 ns/op/core)\n 12 markets  : 1966080 ops in 0.125 s = 15.68 M ops/s on 12 threads (765.5 ns/op/core)\n 48 markets  : 7864320 ops in 0.490 s = 16.04 M ops/s on 12 threads (748.0 ns/op/core)\n",
-  "lc-bench": "n =  21 (q = 17): proof 1916 B, verify p50 642 us, p99 1097 us (one core, ZIP-215 batch)\nn =  64 (q = 52): proof 4226 B, verify p50 2075 us, p99 3270 us (one core, ZIP-215 batch)\nn = 100 (q = 80): proof 6074 B, verify p50 2813 us, p99 4986 us (one core, ZIP-215 batch)\n",
-  "hash-bench": "m = 1048576 items (2097151 SHA-384 hashes each)\nreference : 905.2 ms  (0.432 us/hash)\nstreaming : 980.1 ms  (0.467 us/hash)\nparallel  : 135.0 ms  (0.064 us/hash wall, 12 threads, 6.70x speed-up)\nstreaming tail, m = 4096: p50 4.62 us, p99 12.08 us (bound 13 hashes)\n",
-  "journal-bench": "fsync every     1: 2000 records in 8.276 s = 242 records/s (0.05 MB/s)\nfsync every    16: 100000 records in 25.642 s = 3900 records/s (0.81 MB/s)\nfsync every   256: 100000 records in 1.993 s = 50184 records/s (10.39 MB/s)\nfsync every  4096: 100000 records in 0.424 s = 235898 records/s (48.83 MB/s)\ngroup commit, 128 records (26496 B): p50 4026 µs, p99 6153 µs, p99.9 8530 µs, max 11076 µs\n"
+  "pipeline-bench": "prepared 400000 signed entries (4096 accounts, 16 markets, 20000/slot) in 0.82 s\nbaseline  (sequential, single verify, 1 thread):      18452 entries/s  (21.68 s)\npipeline  (1 thread ):     66650 entries/s  (6.00 s) | verify 76% admit 0% journal∥match 23% (journal 7%, match 16%) ckpt 0.0% expire 0.2%\npipeline  (2 threads):    123583 entries/s  (3.24 s) | verify 75% admit 1% journal∥match 24% (journal 13%, match 23%) ckpt 0.0% expire 0.3%\npipeline  (4 threads):    221491 entries/s  (1.81 s) | verify 69% admit 2% journal∥match 28% (journal 23%, match 28%) ckpt 0.1% expire 0.5%\n           state identical to baseline (9477b9417f5e7654…); 262303 fills, 22926 cancels (incl. expiries), 11925 withdrawals, 8009 deposits\n           receipt proof (35220 receipts/slot, 16 hashes/path): build 0.34 µs, agent check 66.4 µs\npipelined (4 threads, verify s+1 ∥ commit s, 0 replicas):    207141 entries/s  (1.93 s); state identical\npipelined (4 threads, verify s+1 ∥ commit s, 2 replicas):    173895 entries/s  (2.30 s); state identical\n",
+  "match-bench": "single market : 2000000 ops in 0.186 s = 92.9 ns/op (10.76 M ops/s), 1163722 fills, 203058 open orders\nstate hash    : 151.61 ms for 203058 open orders (1e66d816e8c3…)\n 16 markets  : 2621440 ops in 0.100 s = 26.09 M ops/s on 12 threads (460.0 ns/op/core)\n 12 markets  : 1966080 ops in 0.072 s = 27.24 M ops/s on 12 threads (440.6 ns/op/core)\n 48 markets  : 7864320 ops in 0.370 s = 21.24 M ops/s on 12 threads (565.1 ns/op/core)\n",
+  "lc-bench": "n =  21 (q = 17): proof 1916 B, verify p50 456 us, p99 505 us (one core, ZIP-215 batch)\nn =  64 (q = 52): proof 4226 B, verify p50 1310 us, p99 1380 us (one core, ZIP-215 batch)\nn = 100 (q = 80): proof 6074 B, verify p50 2002 us, p99 2092 us (one core, ZIP-215 batch)\n",
+  "hash-bench": "m = 1048576 items (2097151 SHA-384 hashes each)\nreference : 603.6 ms  (0.288 us/hash)\nstreaming : 603.3 ms  (0.288 us/hash)\nparallel  : 56.6 ms  (0.027 us/hash wall, 12 threads, 10.66x speed-up)\nstreaming tail, m = 4096: p50 3.67 us, p99 4.50 us (bound 13 hashes)\n",
+  "journal-bench": "fsync every     1: 2000 records in 8.301 s = 241 records/s (0.05 MB/s)\nfsync every    16: 100000 records in 26.978 s = 3707 records/s (0.77 MB/s)\nfsync every   256: 100000 records in 2.153 s = 46454 records/s (9.62 MB/s)\nfsync every  4096: 100000 records in 0.392 s = 254782 records/s (52.74 MB/s)\ngroup commit, 128 records (26496 B): p50 4032 µs, p99 6014 µs, p99.9 9038 µs, max 11121 µs\n"
  }
 }

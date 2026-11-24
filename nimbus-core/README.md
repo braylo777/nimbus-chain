@@ -1,4 +1,4 @@
-# nimbus-core v0.17
+# nimbus-core v0.18
 
 Twelve Rust crates for the NIMBUS DEX stack (whitepaper §3.1, §4.1, §6.4, §6.6; hash-input layouts in Appendix B,
 Lemma 9″). Local development only. See AUDIT.md.
@@ -35,10 +35,10 @@ Lemma 9″). Local development only. See AUDIT.md.
 | certifier memory (`certify-mem`) | 472 B per slot without a window (≈ 160 GB/day at 0.25 ms slots); with a 1,024-slot window 3.96 → 4.06 MB over 400,000 slots |
 
 ## Requirements
-Rust 1.75+ (`curl https://sh.rustup.rs -sSf | sh`). No C toolchain or system libraries needed.
+Rust 1.88+ (`curl https://sh.rustup.rs -sSf | sh`). No C toolchain or system libraries needed.
 
 ## Build, test, benchmark
-    ./build_and_test.sh                                   # build, 120 tests, benchmarks, fmt, clippy, cargo audit
+    ./build_and_test.sh                                   # build, all tests (count: `python3 ../scripts/count_tests.py`), benchmarks, fmt, clippy, cargo audit
     NIMBUS_NATIVE=1 ./build_and_test.sh                   # same, compiled for this CPU (target-cpu=native): pipelined 159–170 × 10³ entries/s vs 150–159 × 10³ default (+8% mean; slot by slot +5%), three interleaved runs
     PROPTEST_CASES=20000 PIPELINE_SLOTS=400 cargo test --release    # stress run
     ./target/release/sig-bench                            # verification cost, incl. invalid-signature floods and small-slot dispatch

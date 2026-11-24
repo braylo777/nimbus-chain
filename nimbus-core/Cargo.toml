@@ -5,7 +5,7 @@ members = ["crates/nimbus-hash", "crates/nimbus-match", "crates/nimbus-lightclie
 
 [workspace.package]
 edition = "2021"
-version = "0.17.0"
+version = "0.18.0"
 license = "MIT"
 
 [profile.release]
