@@ -1,0 +1,49 @@
+[package]
+name = "nimbus-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+rand = "0.8"
+nimbus-hash = { path = "../crates/nimbus-hash" }
+nimbus-order = { path = "../crates/nimbus-order" }
+nimbus-match = { path = "../crates/nimbus-match" }
+nimbus-journal = { path = "../crates/nimbus-journal" }
+nimbus-lightclient = { path = "../crates/nimbus-lightclient" }
+
+[[bin]]
+name = "order_decode"
+path = "fuzz_targets/order_decode.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "match_engine"
+path = "fuzz_targets/match_engine.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "journal_replay"
+path = "fuzz_targets/journal_replay.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "lightclient_verify"
+path = "fuzz_targets/lightclient_verify.rs"
+test = false
+doc = false
+bench = false
+
+[profile.release]
+debug = 1

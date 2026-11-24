@@ -5,3 +5,7 @@ cache/
 artifacts/
 .DS_Store
 ._*
+nimbus-core/fuzz/target/
+nimbus-core/fuzz/corpus/
+nimbus-core/fuzz/artifacts/
+nimbus-core/fuzz/coverage/

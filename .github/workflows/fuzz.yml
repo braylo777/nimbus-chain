@@ -1,0 +1,39 @@
+name: fuzz (nightly)
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+    inputs:
+      seconds:
+        description: "seconds per target"
+        default: "1800"
+
+jobs:
+  fuzz:
+    name: fuzz ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [order_decode, match_engine, journal_replay, lightclient_verify]
+    defaults:
+      run:
+        working-directory: nimbus-core/fuzz
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: nimbus-core/fuzz
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-fuzz
+      - name: run 30 min (0 crashes required)
+        run: cargo fuzz run ${{ matrix.target }} -- -max_total_time=${{ github.event.inputs.seconds || '1800' }} -rss_limit_mb=2048
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crash-${{ matrix.target }}
+          path: nimbus-core/fuzz/artifacts/

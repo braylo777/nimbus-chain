@@ -1,5 +1,6 @@
 [workspace]
 resolver = "2"
+exclude = ["fuzz"]
 members = ["crates/nimbus-hash", "crates/nimbus-match", "crates/nimbus-lightclient", "crates/nimbus-order", "crates/nimbus-sdk", "crates/nimbus-signer", "crates/nimbus-feed", "crates/nimbus-journal", "crates/nimbus-pipeline", "crates/nimbus-sig", "crates/nimbus-bridge", "crates/nimbus-replica"]
 
 [workspace.package]

@@ -72,8 +72,102 @@ pub struct FinalityProof {
     pub cert: Certificate,
 }
 
+/// Upper bounds a decoder enforces before allocating (a light client must not be made to allocate by a peer).
+pub const MAX_OP_LEN: usize = 1 << 16;
+pub const MAX_PATH_LEN: usize = 64;
+pub const MAX_SIGS: usize = 1 << 12;
+
+impl FinalityProof {
+    /// Wire format (big-endian): op_len (4) ‖ op ‖ index (8) ‖ batch_size (8) ‖ path_len (1) ‖ path (48 each) ‖
+    /// header (154) ‖ sig_count (2) ‖ (validator (2) ‖ signature (64))*.
+    pub fn encode(&self) -> Vec<u8> {
+        let mut v = Vec::with_capacity(
+            4 + self.op.len()
+                + 17
+                + 48 * self.path.len()
+                + HEADER_LEN
+                + 2
+                + 66 * self.cert.sigs.len(),
+        );
+        v.extend_from_slice(&(self.op.len() as u32).to_be_bytes());
+        v.extend_from_slice(&self.op);
+        v.extend_from_slice(&self.index.to_be_bytes());
+        v.extend_from_slice(&self.batch_size.to_be_bytes());
+        v.push(self.path.len() as u8);
+        for h in &self.path {
+            v.extend_from_slice(h);
+        }
+        v.extend_from_slice(&self.header);
+        v.extend_from_slice(&(self.cert.sigs.len() as u16).to_be_bytes());
+        for (i, s) in &self.cert.sigs {
+            v.extend_from_slice(&i.to_be_bytes());
+            v.extend_from_slice(s);
+        }
+        v
+    }
+
+    /// Parse untrusted bytes (exact length). Never panics; allocates at most what the input length allows.
+    pub fn decode(b: &[u8]) -> Result<FinalityProof, Error> {
+        let mut r = b;
+        fn take<'a>(r: &mut &'a [u8], n: usize) -> Result<&'a [u8], Error> {
+            if r.len() < n {
+                return Err(Error::Encoding);
+            }
+            let (a, rest) = r.split_at(n);
+            *r = rest;
+            Ok(a)
+        }
+        let op_len = u32::from_be_bytes(take(&mut r, 4)?.try_into().expect("4")) as usize;
+        if op_len > MAX_OP_LEN {
+            return Err(Error::Encoding);
+        }
+        let op = take(&mut r, op_len)?.to_vec();
+        let index = u64::from_be_bytes(take(&mut r, 8)?.try_into().expect("8"));
+        let batch_size = u64::from_be_bytes(take(&mut r, 8)?.try_into().expect("8"));
+        let path_len = take(&mut r, 1)?[0] as usize;
+        if path_len > MAX_PATH_LEN {
+            return Err(Error::Encoding);
+        }
+        let mut path = Vec::with_capacity(path_len);
+        for _ in 0..path_len {
+            path.push(take(&mut r, 48)?.try_into().expect("48"));
+        }
+        let header = take(&mut r, HEADER_LEN)?.to_vec();
+        let n = u16::from_be_bytes(take(&mut r, 2)?.try_into().expect("2")) as usize;
+        if n > MAX_SIGS || r.len() != 66 * n {
+            return Err(Error::Encoding);
+        }
+        let sigs = r
+            .as_chunks::<66>()
+            .0
+            .iter()
+            .map(|c| {
+                (
+                    u16::from_be_bytes([c[0], c[1]]),
+                    c[2..].try_into().expect("64"),
+                )
+            })
+            .collect();
+        Ok(FinalityProof {
+            op,
+            index,
+            batch_size,
+            path,
+            header,
+            cert: Certificate { sigs },
+        })
+    }
+}
+
+/// Decode and verify in one step (the entry point a browser or embedded light client calls).
+pub fn verify_bytes(set: &ValidatorSet, proof: &[u8]) -> Result<Header, Error> {
+    set.verify(&FinalityProof::decode(proof)?)
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Error {
+    /// The proof bytes do not parse (wrong length, over a bound).
+    Encoding,
     HeaderLength,
     HeaderDomain,
     Inclusion,
@@ -272,6 +366,81 @@ mod tests {
             }
         }
         assert_eq!(rejected, trials, "every mutated proof must be rejected");
+    }
+
+    #[test]
+    fn encode_decode_roundtrip_and_verify_bytes() {
+        let (keys, vs, ops) = setup(7, 33);
+        for idx in [0usize, 16, 32] {
+            let p = build(&ops, idx, 5, &keys, &(0..6).collect::<Vec<_>>());
+            let b = p.encode();
+            let q = FinalityProof::decode(&b).unwrap();
+            assert_eq!(q.encode(), b);
+            assert_eq!(q.op, p.op);
+            assert_eq!(q.path, p.path);
+            assert_eq!(verify_bytes(&vs, &b).unwrap().height, 5);
+        }
+    }
+
+    #[test]
+    fn decode_rejects_every_truncation_and_extension() {
+        let (keys, _, ops) = setup(4, 9);
+        let b = build(&ops, 4, 1, &keys, &[0, 1, 2, 3]).encode();
+        for n in 0..b.len() {
+            assert_eq!(FinalityProof::decode(&b[..n]).err(), Some(Error::Encoding));
+        }
+        let mut longer = b.clone();
+        longer.push(0);
+        assert_eq!(FinalityProof::decode(&longer).err(), Some(Error::Encoding));
+    }
+
+    #[test]
+    fn decode_enforces_bounds_before_allocating() {
+        let mut b = ((MAX_OP_LEN + 1) as u32).to_be_bytes().to_vec();
+        b.extend_from_slice(&[0u8; 64]);
+        assert_eq!(FinalityProof::decode(&b).err(), Some(Error::Encoding));
+        let mut b = 0u32.to_be_bytes().to_vec();
+        b.extend_from_slice(&[0u8; 16]);
+        b.push((MAX_PATH_LEN + 1) as u8);
+        assert_eq!(FinalityProof::decode(&b).err(), Some(Error::Encoding));
+    }
+
+    #[test]
+    fn quorum_is_ceil_four_fifths() {
+        for (n, q) in [(1, 1), (4, 4), (5, 4), (10, 8), (21, 17), (100, 80)] {
+            let (_, vs, _) = setup(n, 1);
+            assert_eq!(vs.quorum(), q, "n = {n}");
+        }
+    }
+
+    #[test]
+    fn header_codec_rejects_bad_length_and_domain() {
+        let h = Header {
+            height: 3,
+            rank: 1,
+            batch_root: [1; 48],
+            prev: [2; 48],
+            history: [3; 48],
+        };
+        let b = h.encode();
+        assert_eq!(Header::decode(&b).unwrap(), h);
+        assert_eq!(Header::decode(&b[..153]).err(), Some(Error::HeaderLength));
+        let mut c = b;
+        c[0] ^= 0xff;
+        assert_eq!(Header::decode(&c).err(), Some(Error::HeaderDomain));
+    }
+
+    #[test]
+    fn short_certificate_reports_have_and_need() {
+        let (keys, vs, ops) = setup(10, 4);
+        let p = build(&ops, 0, 1, &keys, &[0, 1, 2]);
+        assert_eq!(
+            vs.verify(&p).err(),
+            Some(Error::Quorum { have: 3, need: 8 })
+        );
+        let mut p = build(&ops, 0, 1, &keys, &(0..8).collect::<Vec<_>>());
+        p.cert.sigs[7].0 = 99;
+        assert_eq!(vs.verify(&p).err(), Some(Error::UnknownValidator));
     }
 
     /// v0.4 regression: batch verification, like non-strict single verification, accepts R = identity, s = 0 under
