@@ -64,7 +64,8 @@ jobs:
         with:
           tool: cargo-llvm-cov
       - name: coverage
-        run: cargo llvm-cov --release --workspace --ignore-filename-regex 'src/bin/' --fail-under-lines 90 --summary-only
+        # The 100 ms replica-timeout test is timing-sensitive under coverage instrumentation; it runs in the rust jobs.
+        run: cargo llvm-cov --release --workspace --ignore-filename-regex 'src/bin/' --fail-under-lines 90 --summary-only -- --skip a_silent_replica_is_dropped_by_timeout_or_in_flight_cap
 
   wasm:
     name: wasm light-client verifier (demo)
