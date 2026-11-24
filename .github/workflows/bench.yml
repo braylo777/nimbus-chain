@@ -1,0 +1,20 @@
+name: bench (cloud VM)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  bench:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: nimbus-core
+      - name: benchmarks → results/bench-<date>-gha-ubuntu.json
+        run: python3 scripts/bench_json.py --label gha-ubuntu
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bench-gha-ubuntu
+          path: results/bench-*-gha-ubuntu.json

@@ -164,7 +164,10 @@ fn main() {
 
     // Many markets in parallel
     let threads = rayon::current_num_threads();
-    for markets in [threads, 4 * threads] {
+    // 16 markets is the reference configuration quoted in the README (results/metrics.json).
+    let mut sizes = vec![16, threads, 4 * threads];
+    sizes.dedup();
+    for markets in sizes {
         let mut ex = Exchange::new(markets);
         let dep: Vec<(usize, Op)> = (0..markets)
             .flat_map(|k| {
