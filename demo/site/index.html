@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nimbus Light-Client Verifier</title>
+<meta name="description" content="Nimbus Chain finality proofs verified in your browser with WebAssembly. Agent-speed SI blockchain.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='%234338ca'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #ffffff; --fg: #0f172a; --muted: #475569; --line: #e2e8f0; --card: #f8fafc;
+    --ok: #047857; --ok-bg: #ecfdf5; --bad: #b91c1c; --bad-bg: #fef2f2; --accent: #4338ca;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0b1020; --fg: #e5e7eb; --muted: #94a3b8; --line: #1e293b; --card: #111827;
+      --ok: #34d399; --ok-bg: #052e22; --bad: #f87171; --bad-bg: #3b0d0d; --accent: #a5b4fc; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 28px 16px 64px; }
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  .tag { color: var(--accent); font-weight: 600; margin: 0 0 14px; }
+  p { margin: 0 0 12px; color: var(--muted); }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 18px 0; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+  .stat b { display: block; font-size: 22px; font-variant-numeric: tabular-nums; }
+  .stat span { color: var(--muted); font-size: 13px; }
+  .slot { border: 1px solid var(--line); border-radius: 10px; margin: 14px 0; overflow: hidden; }
+  .slot h2 { font-size: 15px; margin: 0; padding: 10px 12px; background: var(--card); border-bottom: 1px solid var(--line); }
+  .slot h2 small { color: var(--muted); font-weight: 400; }
+  .rows { padding: 4px 12px 10px; }
+  .row { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; padding: 6px 0;
+    border-bottom: 1px dashed var(--line); }
+  .row:last-child { border-bottom: 0; }
+  .res { font-variant-numeric: tabular-nums; font-size: 13px; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+  .ok { color: var(--ok); background: var(--ok-bg); }
+  .bad { color: var(--bad); background: var(--bad-bg); }
+  button { font: inherit; font-size: 13px; border: 1px solid var(--line); background: var(--bg); color: var(--fg);
+    border-radius: 8px; padding: 3px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  .receipts { color: var(--muted); font-size: 13px; margin: 6px 0 0; padding-left: 18px; }
+  .flow { font-size: 13px; color: var(--muted); background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 10px 12px; }
+  footer { margin-top: 28px; font-size: 13px; color: var(--muted); }
+  a { color: var(--accent); }
+  @media (max-width: 560px) { .row { grid-template-columns: 1fr auto; } .row button { grid-column: 1 / -1; justify-self: start; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Nimbus light-client verifier</h1>
+  <div class="tag">Agent-speed SI blockchain</div>
+  <p>Each line below is an entry from a trading tape replayed through the real Nimbus engine (verify → admit → journal → match → receipt → checkpoint). For every entry, this page checks a <b>finality proof</b> — RFC 6962 inclusion path, 154-byte header, and Ed25519 signatures from 17 of 21 validators — inside <b>WebAssembly in your browser</b>. Nothing is sent to a server.</p>
+  <div class="flow">order → match → receipt → checkpoint → finality proof → <b>verify (WASM)</b> · press <i>tamper</i> to flip one byte of a proof and watch it fail.</div>
+  <div class="stats" id="stats"></div>
+  <div id="tape"><p>Loading verifier…</p></div>
+  <footer>
+    Demo only: deterministic keys, a replayed tape (not live validators). Not investment advice.
+    Source and numbers: <a href="https://github.com/braylo777/nimbus-chain">github.com/braylo777/nimbus-chain</a> (nimbus-core v0.18).
+  </footer>
+</main>
+<script type="module">
+import { loadVerifier, hexToBytes, ERRORS } from "./verifier.js";
+
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+function timeVerify(v, bytes, reps) {
+  let r = 0;
+  const t0 = performance.now();
+  for (let i = 0; i < reps; i++) r = v.verify(bytes);
+  return { r, ms: (performance.now() - t0) / reps };
+}
+
+function badge(node, r, ms, height) {
+  node.className = "res " + (r === height ? "ok" : "bad");
+  node.textContent = r === height ? `✓ final at slot ${r} · ${ms.toFixed(2)} ms` : `✗ refused: ${ERRORS[String(r)] || r}`;
+}
+
+async function main() {
+  const [wasm, tape] = await Promise.all([
+    fetch("verifier.wasm").then((r) => r.arrayBuffer()),
+    fetch("tape.json").then((r) => r.json()),
+  ]);
+  const v = await loadVerifier(wasm);
+  const n = v.setValidators(tape.validators);
+  const root = document.getElementById("tape");
+  root.textContent = "";
+  const times = [];
+  let ok = 0, total = 0, bytes = 0;
+  for (const s of tape.slots) {
+    const box = el("section", "slot");
+    const h = el("h2", null, `Slot ${s.slot} `);
+    h.append(el("small", null, `· checkpoint: journal ${s.checkpoint.journal_len} records, ${s.checkpoint.receipts} receipts, root ${s.checkpoint.receipts_root}…`));
+    box.append(h);
+    const rows = el("div", "rows");
+    for (const e of s.entries) {
+      const proof = hexToBytes(e.proof);
+      const row = el("div", "row");
+      row.append(el("span", null, e.text));
+      const res = el("span", "res");
+      const { r, ms } = timeVerify(v, proof, 20);
+      badge(res, r, ms, s.slot);
+      total++; bytes += proof.length; times.push(ms); if (r === s.slot) ok++;
+      const btn = el("button", null, "tamper");
+      btn.addEventListener("click", () => {
+        const bad = proof.slice();
+        const i = Math.floor(Math.random() * bad.length);
+        bad[i] ^= 1 << Math.floor(Math.random() * 8);
+        const t = timeVerify(v, bad, 1);
+        badge(res, t.r, t.ms, s.slot);
+        if (t.r !== s.slot) res.textContent += ` (byte ${i} flipped)`;
+        btn.textContent = "restore";
+        btn.onclick = () => { const u = timeVerify(v, proof, 20); badge(res, u.r, u.ms, s.slot); btn.textContent = "tamper"; btn.onclick = null; };
+      }, { once: true });
+      row.append(res, btn);
+      rows.append(row);
+    }
+    const ul = el("ul", "receipts");
+    s.receipts.forEach((t) => ul.append(el("li", null, t)));
+    rows.append(ul);
+    box.append(rows);
+    root.append(box);
+  }
+  times.sort((a, b) => a - b);
+  const stats = document.getElementById("stats");
+  const stat = (b, t) => { const d = el("div", "stat"); d.append(el("b", null, b), el("span", null, t)); stats.append(d); };
+  stat(`${ok} / ${total}`, "proofs verified");
+  stat(`${times[Math.floor(times.length / 2)].toFixed(2)} ms`, "median verify time (WASM)");
+  stat(`${times[times.length - 1].toFixed(2)} ms`, "slowest proof");
+  stat(`${(bytes / total / 1000).toFixed(2)} KB`, `mean proof size · ${n} validators, quorum ${tape.quorum}`);
+}
+
+main().catch((e) => {
+  document.getElementById("tape").textContent = "Could not load the verifier: " + e.message;
+});
+</script>
+</body>
+</html>

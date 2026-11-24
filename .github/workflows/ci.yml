@@ -66,6 +66,32 @@ jobs:
       - name: coverage
         run: cargo llvm-cov --release --workspace --ignore-filename-regex 'src/bin/' --fail-under-lines 90 --summary-only
 
+  wasm:
+    name: wasm light-client verifier (demo)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: demo/verifier
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: build verifier.wasm + replayed tape
+        run: ./demo/build.sh
+      - name: verify every proof in WASM (< 5 ms each), refuse every tamper
+        run: node demo/check.mjs
+
+  readme-numbers:
+    name: README + dissertation numbers == results JSON (G3)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/readme_numbers.py --check
+
   hardhat:
     name: hardhat (local chain)
     runs-on: ubuntu-latest

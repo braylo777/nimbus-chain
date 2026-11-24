@@ -9,3 +9,6 @@ nimbus-core/fuzz/target/
 nimbus-core/fuzz/corpus/
 nimbus-core/fuzz/artifacts/
 nimbus-core/fuzz/coverage/
+demo/verifier/target/
+demo/site/verifier.wasm
+demo/site/tape.json
