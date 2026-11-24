@@ -1,7 +1,7 @@
 # Nimbus Chain
 
 **A dual-path BFT chain for certified operations tapes, with verifiable commitment to autonomous-agent state.**
-*The blockchain for safe superintelligence.*
+*Agent-speed SI blockchain.*
 
 | | |
 |---|---|
