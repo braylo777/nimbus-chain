@@ -8,7 +8,7 @@
 **A dual-path BFT chain for certified operations tapes, with verifiable commitment to autonomous-agent state.**
 *Agent-speed SI blockchain.*
 
-**Live demo:** [nimbus-verifier.pages.dev](https://nimbus-verifier.pages.dev) — finality proofs from a replayed tape (order → match → receipt → checkpoint → proof), verified by the light client in WebAssembly in your browser.
+**Live demo:** [nimbus.braylo.si](https://nimbus.braylo.si) — finality proofs from a replayed tape (order → match → receipt → checkpoint → proof), verified by the light client in WebAssembly in your browser.
 
 <!-- metrics:begin -->
 | Metric | Value |
